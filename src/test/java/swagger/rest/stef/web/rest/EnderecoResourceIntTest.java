@@ -67,7 +67,6 @@ public class EnderecoResourceIntTest {
     @Autowired
     private EntityManager em;
 
-    @Autowired
     private Validator validator;
 
     private MockMvc restEnderecoMockMvc;
@@ -77,7 +76,7 @@ public class EnderecoResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final EnderecoResource enderecoResource = new EnderecoResource(enderecoRepository);
+        final EnderecoResource enderecoResource = new EnderecoResource();
         this.restEnderecoMockMvc = MockMvcBuilders.standaloneSetup(enderecoResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -162,7 +161,7 @@ public class EnderecoResourceIntTest {
             .andExpect(jsonPath("$.[*].cidade").value(hasItem(DEFAULT_CIDADE.toString())))
             .andExpect(jsonPath("$.[*].estado").value(hasItem(DEFAULT_ESTADO.toString())));
     }
-    
+
     @Test
     @Transactional
     public void getEndereco() throws Exception {

@@ -1,6 +1,8 @@
 package swagger.rest.stef.web.rest;
+import org.springframework.beans.factory.annotation.Autowired;
 import swagger.rest.stef.domain.Endereco;
 import swagger.rest.stef.repository.EnderecoRepository;
+import swagger.rest.stef.service.EnderecoService;
 import swagger.rest.stef.web.rest.errors.BadRequestAlertException;
 import swagger.rest.stef.web.rest.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
@@ -26,11 +28,12 @@ public class EnderecoResource {
 
     private static final String ENTITY_NAME = "endereco";
 
-    private final EnderecoRepository enderecoRepository;
+    @Autowired
+    private  EnderecoRepository enderecoRepository;
 
-    public EnderecoResource(EnderecoRepository enderecoRepository) {
-        this.enderecoRepository = enderecoRepository;
-    }
+    @Autowired
+    private  EnderecoService enderecoService;
+
 
     /**
      * POST  /enderecos : Create a new endereco.
@@ -45,7 +48,8 @@ public class EnderecoResource {
         if (endereco.getId() != null) {
             throw new BadRequestAlertException("A new endereco cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Endereco result = enderecoRepository.save(endereco);
+        Endereco result = enderecoService.criaEndereco(endereco);
+
         return ResponseEntity.created(new URI("/api/enderecos/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -59,14 +63,14 @@ public class EnderecoResource {
      * or with status 400 (Bad Request) if the endereco is not valid,
      * or with status 500 (Internal Server Error) if the endereco couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
-     */
+//     */
     @PutMapping("/enderecos")
     public ResponseEntity<Endereco> updateEndereco(@RequestBody Endereco endereco) throws URISyntaxException {
         log.debug("REST request to update Endereco : {}", endereco);
         if (endereco.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        Endereco result = enderecoRepository.save(endereco);
+        Endereco result = enderecoService.criaEndereco(endereco);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, endereco.getId().toString()))
             .body(result);
@@ -92,6 +96,9 @@ public class EnderecoResource {
     @GetMapping("/enderecos/{id}")
     public ResponseEntity<Endereco> getEndereco(@PathVariable Long id) {
         log.debug("REST request to get Endereco : {}", id);
+
+        // classe que pode ou não contar valor não nulo
+        // todo implementar camada de servico
         Optional<Endereco> endereco = enderecoRepository.findById(id);
         return ResponseUtil.wrapOrNotFound(endereco);
     }
